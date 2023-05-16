@@ -1,17 +1,13 @@
 const express = require("express");
 const router = express.Router();
+const login = require("./login");
+const register = require("./register");
 
-// router.use((req, res, next) => {
-//   console.log("Time: ", Date.now());
-//   next();
-// });
-// define the home page route
 router.get("/", (req, res) => {
-  res.send("Home page");
-});
-// define the about route
-router.get("/about", (req, res) => {
-  res.send("about");
+  res.render("home");
 });
 
-module.exports = router
+router.use("/login", login);
+router.use("/register", register);
+
+module.exports = router;
