@@ -30,7 +30,8 @@ const login = async (req, res, next) => {
     if (user) {
       const accessToken = jwt.sign(
         { _id: user._id, is_admin: user.isAdmin },
-        process.env.secret_key
+        process.env.secret_key,
+        {expiresIn: "30s"}
       );
       res.status(200).json({
         code: 200,
