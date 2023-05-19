@@ -1,1 +1,29 @@
-<div>post</div>
+<div class="d-flex justify-content-center align-items-center vw-100 vh-100 bg-">
+  <div>
+    <form action="/login" method="POST">
+      <div class="mb-3">
+        <label for="exampleFormControlInput1" class="form-label">Name</label>
+        <input
+          type="text"
+          class="form-control"
+          placeholder="username"
+          name="username"
+        />
+      </div>
+      <div class="mb-3">
+        <label
+          for="exampleFormControlTextarea1"
+          class="form-label"
+        >Password</label>
+        <input
+          type="password"
+          class="form-control"
+          id="exampleFormControlInput1"
+          placeholder="password"
+          name="password"
+        />
+      </div>
+      <button class="btn btn-info" type="submit">Login</button>
+    </form>
+  </div>
+</div>

@@ -23,7 +23,6 @@ const createUser = async (req, res) => {
 };
 
 const login = async (req, res, next) => {
-  console.log(process.env.secret_key)
   const { username, password } = req.body;
   if (username && password) {
     const user = await User.authenticate(username, password);
@@ -31,7 +30,7 @@ const login = async (req, res, next) => {
       const accessToken = jwt.sign(
         { _id: user._id, is_admin: user.isAdmin },
         process.env.secret_key,
-        {expiresIn: "30s"}
+        { expiresIn: "1h" }
       );
       res.status(200).json({
         code: 200,
@@ -42,7 +41,7 @@ const login = async (req, res, next) => {
       return;
     }
   }
-  res.status(404).json({ code: 400, status: "wrong id", });
+  res.status(404).json({ code: 400, status: "wrong id" });
 };
 
 module.exports = { createUser, login };
