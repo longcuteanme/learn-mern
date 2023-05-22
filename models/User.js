@@ -1,12 +1,28 @@
 const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
+
+const saltRounds = 10;
 
 const { Schema } = mongoose;
 
 const User = new Schema(
   {
-    username: { type: String, required: true, trim: true },
+    username: { type: String, required: true, trim: true, lowercase: true },
     name: String,
-    password: { type: String, required: true, trim: true },
+    password: {
+      type: String,
+      required: true,
+      trim: true,
+      set: (p) => p
+      // {
+      //   return bcrypt.hash(p, saltRounds, function (err, hash) {
+      //     if (!err) {
+      //       console.log("hash", hash);
+      //       return hash;
+      //     }
+      //   });
+      // },
+    },
     email: String,
     phone: String,
     address: String,
@@ -14,6 +30,11 @@ const User = new Schema(
   },
   {
     timestamps: true,
+    methods: {
+      getListPost() {
+        return mongoose.model("posts").find({ userId: this._id });
+      },
+    },
     statics: {
       async authenticate(username, password) {
         const users = await this.find({ username, password });
@@ -24,5 +45,25 @@ const User = new Schema(
     },
   }
 );
+
+// User.pre("save", function (next) {
+//   // Only hash the password if it has been modified or is new
+//   if (!this.isModified("password")) return next();
+
+//   const hashedPassword = bcrypt.hash(
+//     this.password,
+//     saltRounds,
+//     function (err, hash) {
+//       if (!err) {
+//         return hash;
+//       }
+//     }
+//   );
+//   console.log(hashedPassword)
+//   this.password = hashedPassword;
+
+//   // Call the next middleware function
+//   next();
+// });
 
 module.exports = mongoose.model("users", User);

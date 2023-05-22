@@ -16,7 +16,14 @@ const Post = new Schema(
         return posts;
       },
     },
+    query: {
+      byUserId(userId) {
+        return this.where({ userId });
+      },
+    },
   }
 );
+
+Post.index({ _id: 1, userId: 1 }, { sparse: true });
 
 module.exports = mongoose.model("posts", Post);

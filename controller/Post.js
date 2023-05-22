@@ -1,4 +1,5 @@
 const Post = require("../models/Post");
+const User = require("../models/User");
 
 const createPost = async (req, res) => {
   const userId = req.user._id;
@@ -22,7 +23,7 @@ const createPost = async (req, res) => {
 const getPosts = async (req, res) => {
   const userId = req.user._id;
   try {
-    const posts = await Post.getPostsByUserId(userId);
+    const posts = await Post.find().byUserId(userId);
     res.status(200).json({
       code: 200,
       status: "success",
@@ -39,12 +40,16 @@ const getPosts = async (req, res) => {
 
 const deletePost = async (req, res) => {
   const userId = req.user._id;
+  console.log(req.query)
+  const postId = req.query.postId;
+  console.log(postId)
   try {
-    const posts = await Post.getPostsByUserId(userId);
+    const postDelete = await Post.findOne({ userId, _id: postId });
+    console.log(postDelete)
+    await postDelete.remove();
     res.status(200).json({
       code: 200,
       status: "success",
-      data: posts,
     });
   } catch (err) {
     res.status(400).json({
@@ -55,4 +60,4 @@ const deletePost = async (req, res) => {
   }
 };
 
-module.exports = { createPost, getPosts };
+module.exports = { createPost, getPosts, deletePost };

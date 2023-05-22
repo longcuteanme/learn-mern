@@ -17,7 +17,7 @@ const createUser = async (req, res) => {
     res.status(400).json({
       code: 400,
       status: "failure",
-      // elements: isCreComment._id,
+      message: err
     });
   }
 };
@@ -25,7 +25,7 @@ const createUser = async (req, res) => {
 const login = async (req, res, next) => {
   const { username, password } = req.body;
   if (username && password) {
-    const user = await User.authenticate(username, password);
+    const user = await User.findOne({username, password});
     if (user) {
       const accessToken = jwt.sign(
         { _id: user._id, is_admin: user.isAdmin },
