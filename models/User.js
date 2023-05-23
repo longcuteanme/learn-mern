@@ -13,7 +13,6 @@ const User = new Schema(
       type: String,
       required: true,
       trim: true,
-      set: (p) => p
       // {
       //   return bcrypt.hash(p, saltRounds, function (err, hash) {
       //     if (!err) {
@@ -40,30 +39,28 @@ const User = new Schema(
         const users = await this.find({ username, password });
         if (users.length > 0) {
           return users[0];
-        } else return null;
+        }
+      },
+    },
+    query: {
+      byUsername(username) {
+        return this.where({ username });
       },
     },
   }
 );
 
-// User.pre("save", function (next) {
-//   // Only hash the password if it has been modified or is new
-//   if (!this.isModified("password")) return next();
+User.pre("save", async function (next) {
+  // Only hash the password if it has been modified or is new
+  if (!this.isModified("password")) return next();
 
-//   const hashedPassword = bcrypt.hash(
-//     this.password,
-//     saltRounds,
-//     function (err, hash) {
-//       if (!err) {
-//         return hash;
-//       }
-//     }
-//   );
-//   console.log(hashedPassword)
-//   this.password = hashedPassword;
-
-//   // Call the next middleware function
-//   next();
-// });
+  bcrypt.hash(this.password, saltRounds, function (err, hash) {
+    if (!err) {
+      console.log("hash", hash);
+      this.password = hash;
+      next();
+    }
+  });
+});
 
 module.exports = mongoose.model("users", User);
