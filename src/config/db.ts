@@ -1,13 +1,13 @@
-const mongoose = require("mongoose");
-const config = require("./default");
+import mongoose from "mongoose";
+import config from "./default.json";
 const db = config.mongoURI;
 
-const connectDB = async () => {
+export const connectDB = async () => {
   try {
     await mongoose.connect(db, {
       autoIndex: false,
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
+      // useNewUrlParser: true,
+      // useUnifiedTopology: true,
       // useFindAndModify: false,
     });
     console.log("mongoDB connected");
@@ -16,5 +16,3 @@ const connectDB = async () => {
     process.exit(1);
   }
 };
-
-module.exports = connectDB;

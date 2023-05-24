@@ -9,4 +9,4 @@ router.post("/", [verifyToken, createPost]);
 
 router.delete("/", [verifyToken, deletePost]);
 
-module.exports = router;
+export default router;

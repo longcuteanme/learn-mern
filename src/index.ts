@@ -1,14 +1,15 @@
-const express = require("express");
-const connectDB = require("./config/db");
-const { engine } = require("express-handlebars");
 require("dotenv").config();
+
+import { engine } from "express-handlebars";
+import { connectDB } from "./config/db";
+import express from "express";
+import indexRouter from "./routes/index";
+
 var bodyParser = require("body-parser");
 
 connectDB();
 
 const { port } = process.env;
-
-var indexRouter = require("./routes/index");
 
 const app = express();
 

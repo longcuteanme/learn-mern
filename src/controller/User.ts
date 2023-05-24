@@ -1,11 +1,14 @@
+import { IUser } from "src/models/User";
+
 require("dotenv").config();
 
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
+const { getHashedPassword, compareHashedPassword } = require("../utils");
 
 const createUser = async (req, res) => {
-  const { username, password, isAdmin } = req.body;
-  const userExit = await User.findOne().byUsername(username);
+  const { username, password } = req.body;
+  const userExit: IUser | null = await User.findOne().byUsername(username);
   if (userExit) {
     res.status(400).json({
       code: 400,
@@ -14,7 +17,13 @@ const createUser = async (req, res) => {
     });
     return;
   }
-  const newUser = new User({ ...req.body, isAdmin: false });
+  const hashedPassword = await getHashedPassword(password);
+  console.log("hashedPassword", hashedPassword);
+  const newUser = new User({
+    ...req.body,
+    password: hashedPassword,
+    isAdmin: false,
+  });
   try {
     await newUser.save();
     res.status(200).json({
@@ -31,11 +40,15 @@ const createUser = async (req, res) => {
   }
 };
 
-const login = async (req, res, next) => {
+const login = async (req, res) => {
   const { username, password } = req.body;
   if (username && password) {
-    const user = await User.findOne({ username, password });
-    if (user) {
+    const user = await User.findOne({ username });
+    if (!user) {
+      res.status(404).json({ code: 400, status: "wrong id" });
+    }
+    const match = compareHashedPassword(password, user.password);
+    if (match) {
       const accessToken = jwt.sign(
         { _id: user._id, is_admin: user.isAdmin },
         process.env.secret_key,
@@ -53,4 +66,4 @@ const login = async (req, res, next) => {
   res.status(404).json({ code: 400, status: "wrong id" });
 };
 
-module.exports = { createUser, login };
+export { createUser, login };

@@ -1,11 +1,18 @@
-const mongoose = require("mongoose");
-const bcrypt = require("bcrypt");
-
-const saltRounds = 10;
+import mongoose from "mongoose";
 
 const { Schema } = mongoose;
 
-const User = new Schema(
+export interface IUser {
+  username: string;
+  password: string;
+  name: string;
+  email?: string;
+  phone: String;
+  address: String;
+  isAdmin: Boolean;
+}
+
+const User = new Schema<IUser>(
   {
     username: { type: String, required: true, trim: true, lowercase: true },
     name: String,
@@ -25,7 +32,7 @@ const User = new Schema(
     email: String,
     phone: String,
     address: String,
-    isAdmin: { type: Boolean, required: true, trim: true },
+    isAdmin: { type: Boolean, required: true, trim: true, default: false },
   },
   {
     timestamps: true,
@@ -35,32 +42,20 @@ const User = new Schema(
       },
     },
     statics: {
-      async authenticate(username, password) {
+      async authenticate(username: string, password: string) {
         const users = await this.find({ username, password });
         if (users.length > 0) {
           return users[0];
         }
+        return null;
       },
     },
     query: {
-      byUsername(username) {
+      byUsername(username: string) {
         return this.where({ username });
       },
     },
   }
 );
 
-User.pre("save", async function (next) {
-  // Only hash the password if it has been modified or is new
-  if (!this.isModified("password")) return next();
-
-  bcrypt.hash(this.password, saltRounds, function (err, hash) {
-    if (!err) {
-      console.log("hash", hash);
-      this.password = hash;
-      next();
-    }
-  });
-});
-
-module.exports = mongoose.model("users", User);
+export default mongoose.model("users", User);

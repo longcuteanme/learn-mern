@@ -1,8 +1,14 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const { Schema } = mongoose;
 
-const Post = new Schema(
+interface IPost {
+  name: string;
+  userId: string;
+  description: string;
+}
+
+const Post = new Schema<IPost>(
   {
     name: { type: String, required: true, trim: true, maxLength: 50 },
     description: { type: String, required: true, trim: true, maxLength: 300 },
